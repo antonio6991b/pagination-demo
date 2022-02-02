@@ -1,0 +1,129 @@
+<HTML xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>all cars</title>
+</head>
+<h3>
+    Page <span th:text="${currentPage}"></span>
+</h3>
+
+    <table style="border:solid">
+        <tr>
+            <td>car id</td>
+            <td>car name</td>
+            <td>mileage</td>
+            <td>owner</td>
+        </tr >
+        <tr th:each = "car:${cars}" >
+            <td><span th:text = "${car.getCarId()}"></span></td>
+            <td><span th:text = "${car.getCarName()}"></span></td>
+            <td><span th:text = "${car.getMileage()}"></span></td>
+            <td><span th:text = "${car.getOwner()}"></span></td>
+        </tr>
+    </table>
+    <p>
+        <div id = 'pagination'></div>
+    </p>
+<div>
+    Количество записей на странице <input type="number" id="toPage" style="width:70px" onkeydown="if(event.keyCode===13){changeLimit()}">
+    <button onclick="changeLimit()">OK</button>
+</div>
+<input type="text" style="display:none" th:value = "${currentPage}" id = "currentPage"><br>
+<input type="text" style="display:none" th:value = "${pages}" id = "pages"><br>
+<input type="text" style="display:none" th:value = "${limit}" id = "limit"><br>
+
+<script>
+    let pagination = document.getElementById("pagination");
+    let currentPage = document.getElementById("currentPage").value;
+    let pages = document.getElementById("pages").value;
+    let limit = document.getElementById("limit").value;
+    document.getElementById("toPage").value=limit;
+
+    if(pages > 1){
+        if(currentPage > 1){
+            pagination.innerHTML += '<a href = "/view/cars?page=' + (currentPage-1) + '&limit=' + limit + '">Предыдущая страница</a> ';
+        }
+        pagination.innerHTML += "|";
+        if(currentPage != pages){
+            pagination.innerHTML += '<a href = "/view/cars?page=' + (Number(currentPage)+1) + '&limit=' + limit + '">Следующая страница</a> ';
+        }
+        pagination.innerHTML += "<br>";
+    }
+    if(pages <= 15){
+        for(i = 1; i <= pages; i++){
+            if(currentPage==i){
+                pagination.innerHTML += '<span><b>' + i + '</b></span> | ';
+            }
+            else{
+                pagination.innerHTML += '<a href = "/view/cars?page=' + i + '&limit=' + limit + '">' + i + '</a> | ';
+            }
+        }
+    }
+    if(pages > 15){
+        if(currentPage <= 3){
+            for(i = 1; i <= 3; i++){
+                if(currentPage==i){
+                    pagination.innerHTML += '<span><b>' + i + '</b></span> | ';
+                }
+                else{
+                    pagination.innerHTML += '<a href = "/view/cars?page=' + i + '&limit=' + limit + '">' + i + '</a> | ';
+                }
+            }
+            if(currentPage==3){
+                pagination.innerHTML += '<a href = "/view/cars?page=' + 4 + '&limit=' + limit + '">' + 4 + '</a> | ';
+            }
+            pagination.innerHTML += '... | ';
+            pagination.innerHTML += '<a href = "/view/cars?page=' + (pages-1) + '&limit=' + limit + '">' + (pages-1) + '</a> | ';
+            pagination.innerHTML += '<a href = "/view/cars?page=' + pages + '&limit=' + limit + '">' + pages + '</a> | ';
+        }
+        if((currentPage >= 4) && (currentPage < pages-3)){
+            pagination.innerHTML += '<a href = "/view/cars?page=' + 1 + '&limit=' + limit + '">' + 1 + '</a> | ';
+            pagination.innerHTML += '... | ';
+
+            pagination.innerHTML += '<a href = "/view/cars?page=' + (currentPage-1) + '&limit=' + limit + '">' + (currentPage-1) + '</a> | ';
+            pagination.innerHTML += '<span><b>' + currentPage + '</b></span> | ';
+            pagination.innerHTML += '<a href = "/view/cars?page=' + (Number(currentPage)+1) + '&limit=' + limit + '">' + (Number(currentPage)+1) + '</a> | ';
+
+            pagination.innerHTML += '... | ';
+            pagination.innerHTML += '<a href = "/view/cars?page=' + (pages-1) + '&limit=' + limit + '">' + (pages-1) + '</a> | ';
+            pagination.innerHTML += '<a href = "/view/cars?page=' + pages + '&limit=' + limit + '">' + pages + '</a> | ';
+        }
+
+        if((currentPage >= 4) && (currentPage >= pages-3)){
+            pagination.innerHTML += '<a href = "/view/cars?page=' + 1 + '&limit=' + limit + '">' + 1 + '</a> | ';
+            pagination.innerHTML += '... | ';
+
+            for(i = pages-4; i <= pages; i++){
+                if(currentPage==i){
+                    pagination.innerHTML += '<span><b>' + i + '</b></span> | ';
+                }else{
+                    pagination.innerHTML += '<a href = "/view/cars?page=' + i + '&limit=' + limit + '">' + i + '</a> | ';
+                }
+            }
+        }
+    }
+
+    pagination.innerHTML += "<br> К странице";
+        let select = '<select onchange="selectPage(this.selectedIndex+1)">';
+
+        for(z = 1; z <= pages; z++){
+            if(z==currentPage){
+                select += '<option selected>'+ z +'</option>';
+            }
+            else{
+                select += '<option>'+ z +'</option>';
+            }
+        }
+
+        select += '</select>';
+        pagination.innerHTML += select;
+
+    function changeLimit(){
+        let newLimit = document.getElementById("toPage").value;
+        document.location.href="/view/cars?page=1&limit=" + newLimit;
+    }
+
+    function selectPage(sp){
+        document.location.href="/view/cars?page=" + sp + "&limit=" + limit;
+    }
+</script>
+</HTML>

@@ -1,0 +1,25 @@
+version: "1.0"
+services:
+  mysql_db:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: pagination
+      MYSQL_USER: anton
+      MYSQL_PASSWORD: anton
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - 3306:3306
+
+  distanceapp:
+    build: /
+    image: paginationapp
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql_db
+    links:
+      - mysql_db:app_db
+
+
